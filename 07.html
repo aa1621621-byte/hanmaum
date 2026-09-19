@@ -88,7 +88,7 @@ h1 {
   height: 216px;
   margin-top: 6px;
 }
-.player svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.player > svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .player circle { fill: none; stroke-width: 4; }
 .track { stroke: var(--ring); }
 .progress {
@@ -114,7 +114,7 @@ button {
 }
 button:active { transform: scale(0.96); }
 button:focus-visible { outline: 3px solid var(--bloom); outline-offset: 4px; }
-button svg { width: 64px; height: 64px; }
+button svg { width: 64px; height: 64px; transform: none; }
 .playing button { background: var(--water-deep); }
 /* water ripple while playing */
 .ripple {
@@ -186,6 +186,7 @@ footer {
   var iPlay = document.getElementById('iconPlay');
   var iPause = document.getElementById('iconPause');
   var CIRC = 628;
+  var started = false;
 
   function fmt(s) {
     if (!isFinite(s)) return '0:00';
@@ -197,7 +198,7 @@ footer {
     iPlay.style.display = playing ? 'none' : '';
     iPause.style.display = playing ? '' : 'none';
     btn.setAttribute('aria-label', playing ? '일시정지' : '낭송 듣기');
-    hint.textContent = playing ? '낭송 중입니다' : (audio.currentTime > 0 && !audio.ended ? '다시 누르면 이어서 재생됩니다' : '버튼을 누르면 낭송이 시작됩니다');
+    hint.textContent = playing ? '낭송 중입니다' : (started && !audio.ended ? '다시 누르면 이어서 재생됩니다' : '버튼을 누르면 낭송이 시작됩니다');
   }
   function tick() {
     var d = audio.duration || 0, c = audio.currentTime || 0;
@@ -208,7 +209,7 @@ footer {
   btn.addEventListener('click', function () {
     if (audio.paused) { audio.play().catch(function(){}); } else { audio.pause(); }
   });
-  audio.addEventListener('play', function () { setState(true); });
+  audio.addEventListener('play', function () { started = true; setState(true); });
   audio.addEventListener('pause', function () { setState(false); });
   audio.addEventListener('ended', function () {
     setState(false);
